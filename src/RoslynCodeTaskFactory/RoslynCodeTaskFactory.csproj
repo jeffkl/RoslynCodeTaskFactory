@@ -1,0 +1,89 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="15.3.409" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.3.409" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.3.409" PrivateAssets="All" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" PrivateAssets="All" />
+    <PackageReference Include="System.Xml.XDocument" Version="4.3.0" PrivateAssets="All" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.0.41" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+
+  </ItemGroup>
+
+  <Target Name="CustomPack" DependsOnTargets="GetBuildVersion">
+
+    <ItemGroup>
+      <_TargetFrameworks Include="$(TargetFrameworks)" />
+    </ItemGroup>
+    
+    <PropertyGroup>
+      <StagingPath>$(OutputPath)\staging\</StagingPath>
+    </PropertyGroup>
+    
+    <RemoveDir Directories="$(StagingPath)" />
+
+    <MSBuild Targets="Publish" Projects="$(MSBuildThisFileFullPath)" Properties="TargetFramework=%(_TargetFrameworks.Identity);PublishDir=$(StagingPath)%(_TargetFrameworks.Identity)" />
+
+    <MSBuild Projects="..\NETStandardReferenceAssemblies\NETStandardReferenceAssemblies.csproj" Targets="Restore" />
+
+    <MSBuild Projects="..\NETStandardReferenceAssemblies\NETStandardReferenceAssemblies.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);Platform=$(Platform)">
+      <Output TaskParameter="TargetOutputs" ItemName="_ReferenceAssemblies" />
+    </MSBuild>
+    
+    <ItemGroup>
+      <_PackageFiles Include="$(StagingPath)\**\*" Exclude="$(StagingPath)\**\Microsoft.Build.*">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>build\</PackagePath>
+      </_PackageFiles>
+
+      <_PackageFiles Include="RoslynCodeTaskFactory.props">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>build\</PackagePath>
+      </_PackageFiles>
+
+      <_PackageFiles Include="ref\**">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>build\ref</PackagePath>
+      </_PackageFiles>
+      
+      <_PackageFiles Include="@(_ReferenceAssemblies)">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>build\ref</PackagePath>
+      </_PackageFiles>
+    </ItemGroup>
+
+    <ConvertToAbsolutePath Paths="$(OutputPath)">
+      <Output TaskParameter="AbsolutePaths" PropertyName="PackageOutputAbsolutePath" />
+    </ConvertToAbsolutePath>
+
+    <ConvertToAbsolutePath Paths="$(IntermediateOutputPath)">
+      <Output TaskParameter="AbsolutePaths" PropertyName="NuspecOutputAbsolutePath" />
+    </ConvertToAbsolutePath>
+
+    <ConvertToAbsolutePath Paths="$(BaseIntermediateOutputPath)">
+      <Output TaskParameter="AbsolutePaths" PropertyName="RestoreOutputAbsolutePath" />
+    </ConvertToAbsolutePath>
+    
+    <PackTask PackItem="$(MSBuildThisFileFullPath)" PackageFiles="@(_PackageFiles)" PackageVersion="$(PackageVersion)" PackageId="$(PackageId)" Title="$(Title)" Authors="$(Authors)" Description="$(PackageDescription)" Copyright="$(Copyright)" RequireLicenseAcceptance="$(PackageRequireLicenseAcceptance)" LicenseUrl="$(PackageLicenseUrl)" ProjectUrl="$(PackageProjectUrl)" IconUrl="$(PackageIconUrl)" ReleaseNotes="$(PackageReleaseNotes)" Tags="$(PackageTags)" DevelopmentDependency="$(DevelopmentDependency)" TargetFrameworks="@(_TargetFrameworks)" AssemblyName="$(AssemblyName)" PackageOutputPath="$(PackageOutputAbsolutePath)" IncludeSymbols="$(IncludeSymbols)" IncludeSource="$(IncludeSource)" PackageTypes="$(PackageType)" IsTool="$(IsTool)" RepositoryUrl="$(RepositoryUrl)" RepositoryType="$(RepositoryType)" NoPackageAnalysis="$(NoPackageAnalysis)" MinClientVersion="$(MinClientVersion)" Serviceable="$(Serviceable)" ContinuePackingAfterGeneratingNuspec="true" NuspecOutputPath="$(NuspecOutputAbsolutePath)" IncludeBuildOutput="false" BuildOutputFolder="$(BuildOutputTargetFolder)" ContentTargetFolders="build" RestoreOutputPath="$(RestoreOutputAbsolutePath)" NuspecFile="$(NuspecFileAbsolutePath)" NuspecBasePath="$(NuspecBasePath)" NuspecProperties="$(NuspecProperties)" />
+
+  </Target>
+
+</Project>
