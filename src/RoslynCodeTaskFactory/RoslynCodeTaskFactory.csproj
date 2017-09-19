@@ -48,7 +48,7 @@
     
     <RemoveDir Directories="$(StagingPath)" />
 
-    <MSBuild Targets="Publish" Projects="$(MSBuildThisFileFullPath)" Properties="TargetFramework=%(_TargetFrameworks.Identity);PublishDir=$(StagingPath)%(_TargetFrameworks.Identity)" />
+    <MSBuild Targets="Publish" Projects="$(MSBuildThisFileFullPath)" Properties="TargetFramework=%(_TargetFrameworks.Identity);PublishDir=$(StagingPath)%(_TargetFrameworks.Identity);Configuration=$(Configuration)" />
 
     <MSBuild Projects="..\NETStandardReferenceAssemblies\NETStandardReferenceAssemblies.csproj" Targets="Restore" />
 
@@ -126,6 +126,19 @@
       RestoreOutputPath="$(RestoreOutputAbsolutePath)"
     />
 
+  </Target>
+
+  <Target Name="RemovePreleaseFromVersion"
+          AfterTargets="GetBuildVersion">
+    
+    <PropertyGroup Condition=" '$(PublicRelease)' == 'true' And '$(PrereleaseVersion)' != '' ">
+      <AssemblyInformationalVersion>$(AssemblyInformationalVersion.Replace($(PrereleaseVersion), ''))</AssemblyInformationalVersion>
+      <NuGetPackageVersion>$(NuGetPackageVersion.Replace($(PrereleaseVersion), ''))</NuGetPackageVersion>
+      <Version>$(Version.Replace($(PrereleaseVersion), ''))</Version>
+      <PackageVersion>$(PackageVersion.Replace($(PrereleaseVersion), ''))</PackageVersion>
+      <NPMPackageVersion>$(NPMPackageVersion.Replace($(PrereleaseVersion), ''))</NPMPackageVersion>
+    </PropertyGroup>
+    
   </Target>
 
 </Project>
