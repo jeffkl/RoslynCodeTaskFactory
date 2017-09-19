@@ -52,7 +52,7 @@ namespace RoslynCodeTaskFactory.Internal
 
         protected override string GenerateFullPathToTool()
         {
-            if (!String.IsNullOrWhiteSpace(ToolExe))
+            if (!String.IsNullOrWhiteSpace(ToolExe) && Path.IsPathRooted(ToolExe))
             {
                 return ToolExe;
             }
