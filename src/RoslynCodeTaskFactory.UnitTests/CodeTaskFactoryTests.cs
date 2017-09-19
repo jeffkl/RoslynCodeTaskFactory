@@ -6,15 +6,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Resources;
-using Xunit;
+using NUnit.Framework;
+using Shouldly;
+using System.Reflection;
 
 namespace RoslynCodeTaskFactory.UnitTests
 {
+    [TestFixture]
     public sealed class CodeTaskFactoryTests : TestBase
     {
         private const string TaskName = "MyInlineTask";
 
-        [Fact]
+        [Test]
         public void ApplySourceCodeTemplateVisualBasicFragment()
         {
             const string fragment = "Dim x = 0";
@@ -48,7 +51,7 @@ End Namespace";
                 expectedCodeType: CodeTaskFactoryCodeType.Fragment);
         }
 
-        [Fact]
+        [Test]
         public void ApplySourceCodeTemplateVisualBasicFragmentWithProperties()
         {
             ICollection<TaskPropertyInfo> parameters = new List<TaskPropertyInfo>
@@ -101,7 +104,7 @@ End Namespace";
                 parameters: parameters);
         }
 
-        [Fact]
+        [Test]
         public void ApplySourceCodeTemplateVisualBasicMethod()
         {
             const string method = @"Public Overrides Function Execute() As Boolean\r
@@ -135,7 +138,7 @@ End Namespace";
                 expectedCodeType: CodeTaskFactoryCodeType.Method);
         }
 
-        [Fact]
+        [Test]
         public void CodeLanguageFromTaskBody()
         {
             TryLoadTaskBodyAndExpectSuccess("<Code Language=\"CS\">code</Code>", expectedCodeLanguage: "CS");
@@ -149,7 +152,7 @@ End Namespace";
             TryLoadTaskBodyAndExpectSuccess("<Code Language=\"ViSuAl BaSic\">code</Code>", expectedCodeLanguage: "VB");
         }
 
-        [Fact]
+        [Test]
         public void CodeTypeFromTaskBody()
         {
             foreach (CodeTaskFactoryCodeType codeType in Enum.GetValues(typeof(CodeTaskFactoryCodeType)).Cast<CodeTaskFactoryCodeType>())
@@ -162,7 +165,7 @@ End Namespace";
             TryLoadTaskBodyAndExpectSuccess($"<Code Source=\"{sourceCodeFile}\"/>", expectedCodeType: CodeTaskFactoryCodeType.Class);
         }
 
-        [Fact]
+        [Test]
         public void CSharpFragment()
         {
             const string fragment = "int x = 0;";
@@ -191,7 +194,7 @@ namespace InlineCode
             TryLoadTaskBodyAndExpectSuccess(taskBody: $"<Code>{fragment}</Code>", expectedSourceCode: expectedSourceCode);
         }
 
-        [Fact]
+        [Test]
         public void CSharpFragmentWithProperties()
         {
             ICollection<TaskPropertyInfo> parameters = new List<TaskPropertyInfo>
@@ -243,7 +246,7 @@ namespace InlineCode
                 parameters: parameters);
         }
 
-        [Fact]
+        [Test]
         public void CSharpMethod()
         {
             const string method = @"public override bool Execute() { int x = 0; return Success; }";
@@ -272,7 +275,7 @@ namespace InlineCode
                 expectedCodeType: CodeTaskFactoryCodeType.Method);
         }
 
-        [Fact]
+        [Test]
         public void EmptyCodeElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -280,7 +283,7 @@ namespace InlineCode
                 expectedErrorMessage: "You must specify source code within the Code element or a path to a file containing source code.");
         }
 
-        [Fact]
+        [Test]
         public void EmptyIncludeAttributeOnReferenceElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -288,7 +291,7 @@ namespace InlineCode
                 expectedErrorMessage: "The \"Include\" attribute of the <Reference> element has been set but is empty. If the \"Include\" attribute is set it must not be empty.");
         }
 
-        [Fact]
+        [Test]
         public void EmptyLanguageAttributeOnCodeElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -296,7 +299,7 @@ namespace InlineCode
                 expectedErrorMessage: "The \"Language\" attribute of the <Code> element has been set but is empty. If the \"Language\" attribute is set it must not be empty.");
         }
 
-        [Fact]
+        [Test]
         public void EmptyNamespaceAttributeOnUsingElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -304,7 +307,7 @@ namespace InlineCode
                 expectedErrorMessage: "The \"Namespace\" attribute of the <Using> element has been set but is empty. If the \"Namespace\" attribute is set it must not be empty.");
         }
 
-        [Fact]
+        [Test]
         public void EmptySourceAttributeOnCodeElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -312,7 +315,7 @@ namespace InlineCode
                 expectedErrorMessage: "The \"Source\" attribute of the <Code> element has been set but is empty. If the \"Source\" attribute is set it must not be empty.");
         }
 
-        [Fact]
+        [Test]
         public void EmptyTypeAttributeOnCodeElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -320,14 +323,14 @@ namespace InlineCode
                 expectedErrorMessage: "The \"Type\" attribute of the <Code> element has been set but is empty. If the \"Type\" attribute is set it must not be empty.");
         }
 
-        [Fact]
+        [Test]
         public void IgnoreTaskCommentsAndWhiteSpace()
         {
             TryLoadTaskBodyAndExpectSuccess("<!-- Comment --><Code>code</Code>");
             TryLoadTaskBodyAndExpectSuccess("                <Code>code</Code>");
         }
 
-        [Fact]
+        [Test]
         public void InvalidCodeLanguage()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -335,7 +338,7 @@ namespace InlineCode
                 expectedErrorMessage: "The specified code language \"Invalid\" is invalid.  The supported code languages are \"CS, VB\".");
         }
 
-        [Fact]
+        [Test]
         public void InvalidCodeType()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -343,7 +346,7 @@ namespace InlineCode
                 expectedErrorMessage: "The specified code type \"Invalid\" is invalid.  The supported code types are \"Fragment, Method, Class\".");
         }
 
-        [Fact]
+        [Test]
         public void InvalidTaskChildElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -355,7 +358,7 @@ namespace InlineCode
                 expectedErrorMessage: "The element <Text> is not a valid child of the <Task> element.  Valid child elements are <Code>, <Reference>, and <Using>.");
         }
 
-        [Fact]
+        [Test]
         public void InvalidTaskXml()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -363,7 +366,7 @@ namespace InlineCode
                 expectedErrorMessage: "The specified task XML is invalid.  '<' is an unexpected token. The expected token is '='. Line 1, position 19.");
         }
 
-        [Fact]
+        [Test]
         public void MissingCodeElement()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -371,7 +374,7 @@ namespace InlineCode
                 expectedErrorMessage: $"The <Code> element is missing for the \"{TaskName}\" task. This element is required.");
         }
 
-        [Fact]
+        [Test]
         public void MultipleCodeNodes()
         {
             TryLoadTaskBodyAndExpectFailure(
@@ -379,7 +382,7 @@ namespace InlineCode
                 expectedErrorMessage: "Only one <Code> element can be specified.");
         }
 
-        [Fact]
+        [Test]
         public void NamespacesFromTaskBody()
         {
             const string taskBody = @"
@@ -398,7 +401,7 @@ namespace InlineCode
                 });
         }
 
-        [Fact]
+        [Test]
         public void ReferencesFromTaskBody()
         {
             const string taskBody = @"
@@ -419,7 +422,7 @@ namespace InlineCode
                 });
         }
 
-        [Fact]
+        [Test]
         public void SourceCodeFromFile()
         {
             const string sourceCodeFileContents = @"
@@ -446,14 +449,14 @@ namespace InlineCode
 
             TaskLoggingHelper log = new TaskLoggingHelper(buildEngine, TaskName)
             {
-                TaskResources = new ResourceManager(typeof(CodeTaskFactory).Assembly.GetType("RoslynCodeTaskFactory.Strings"))
+                TaskResources = new ResourceManager(typeof(CodeTaskFactory).GetTypeInfo().Assembly.GetType("RoslynCodeTaskFactory.Strings"))
             };
 
             bool success = CodeTaskFactory.TryLoadTaskBody(log, TaskName, taskBody, new List<TaskPropertyInfo>(), out TaskInfo _);
 
             Assert.False(success);
 
-            Assert.Equal(new[] {expectedErrorMessage}, buildEngine.Errors);
+            buildEngine.Errors.ShouldBe(new[] { expectedErrorMessage });
         }
 
         private void TryLoadTaskBodyAndExpectSuccess(
@@ -469,38 +472,38 @@ namespace InlineCode
 
             TaskLoggingHelper log = new TaskLoggingHelper(buildEngine, TaskName)
             {
-                TaskResources = new ResourceManager(typeof(CodeTaskFactory).Assembly.GetType("RoslynCodeTaskFactory.Strings"))
+                TaskResources = new ResourceManager(typeof(CodeTaskFactory).GetTypeInfo().Assembly.GetType("RoslynCodeTaskFactory.Strings"))
             };
 
             bool success = CodeTaskFactory.TryLoadTaskBody(log, TaskName, taskBody, parameters ?? new List<TaskPropertyInfo>(), out TaskInfo taskInfo);
 
-            Assert.Equal(new string[0], buildEngine.Errors);
+            buildEngine.Errors.ShouldBe(new string[0]);
 
             Assert.True(success);
 
             if (expectedReferences != null)
             {
-                Assert.Equal(expectedReferences, taskInfo.References);
+                taskInfo.References.ShouldBe(expectedReferences);
             }
 
             if (expectedNamespaces != null)
             {
-                Assert.Equal(expectedNamespaces, taskInfo.Namespaces);
+                taskInfo.Namespaces.ShouldBe(expectedNamespaces);
             }
 
             if (expectedCodeLanguage != null)
             {
-                Assert.Equal(expectedCodeLanguage, taskInfo.CodeLanguage);
+                taskInfo.CodeLanguage.ShouldBe(expectedCodeLanguage);
             }
 
             if (expectedCodeType != null)
             {
-                Assert.Equal(expectedCodeType.Value, taskInfo.CodeType);
+                taskInfo.CodeType.ShouldBe(expectedCodeType.Value);
             }
 
             if (expectedSourceCode != null)
             {
-                Assert.Equal(expectedSourceCode, taskInfo.SourceCode);
+                taskInfo.SourceCode.ShouldBe(expectedSourceCode, StringCompareShould.IgnoreLineEndings);
             }
         }
 

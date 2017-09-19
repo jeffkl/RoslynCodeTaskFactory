@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
+    <Authors>jeffkl</Authors>
+    <Company />
+    <Description>An MSBuild CodeTaskFactory that uses Roslyn compiler for cross platform compatibility.</Description>
+    <PackageLicenseUrl>https://github.com/jeffkl/RoslynCodeTaskFactory/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jeffkl/RoslynCodeTaskFactory</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jeffkl/RoslynCodeTaskFactory</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>MSBuild Roslyn CodeTaskFactory Code Task Factory</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -82,7 +90,41 @@
       <Output TaskParameter="AbsolutePaths" PropertyName="RestoreOutputAbsolutePath" />
     </ConvertToAbsolutePath>
     
-    <PackTask PackItem="$(MSBuildThisFileFullPath)" PackageFiles="@(_PackageFiles)" PackageVersion="$(PackageVersion)" PackageId="$(PackageId)" Title="$(Title)" Authors="$(Authors)" Description="$(PackageDescription)" Copyright="$(Copyright)" RequireLicenseAcceptance="$(PackageRequireLicenseAcceptance)" LicenseUrl="$(PackageLicenseUrl)" ProjectUrl="$(PackageProjectUrl)" IconUrl="$(PackageIconUrl)" ReleaseNotes="$(PackageReleaseNotes)" Tags="$(PackageTags)" DevelopmentDependency="$(DevelopmentDependency)" TargetFrameworks="@(_TargetFrameworks)" AssemblyName="$(AssemblyName)" PackageOutputPath="$(PackageOutputAbsolutePath)" IncludeSymbols="$(IncludeSymbols)" IncludeSource="$(IncludeSource)" PackageTypes="$(PackageType)" IsTool="$(IsTool)" RepositoryUrl="$(RepositoryUrl)" RepositoryType="$(RepositoryType)" NoPackageAnalysis="$(NoPackageAnalysis)" MinClientVersion="$(MinClientVersion)" Serviceable="$(Serviceable)" ContinuePackingAfterGeneratingNuspec="true" NuspecOutputPath="$(NuspecOutputAbsolutePath)" IncludeBuildOutput="false" BuildOutputFolder="$(BuildOutputTargetFolder)" ContentTargetFolders="build" RestoreOutputPath="$(RestoreOutputAbsolutePath)" NuspecFile="$(NuspecFileAbsolutePath)" NuspecBasePath="$(NuspecBasePath)" NuspecProperties="$(NuspecProperties)" />
+    <PackTask
+      PackItem="$(MSBuildThisFileFullPath)"
+      PackageFiles="@(_PackageFiles)"
+      PackageVersion="$(PackageVersion)"
+      PackageId="$(PackageId)"
+      Title="$(Title)"
+      Authors="$(Authors)"
+      Description="$(Description)"
+      Copyright="$(Copyright)"
+      RequireLicenseAcceptance="false"
+      LicenseUrl="$(PackageLicenseUrl)"
+      ProjectUrl="$(PackageProjectUrl)"
+      IconUrl="$(PackageIconUrl)"
+      ReleaseNotes="$(PackageReleaseNotes)"
+      Tags="$(PackageTags)"
+      DevelopmentDependency="$(DevelopmentDependency)"
+      TargetFrameworks="@(_TargetFrameworks)"
+      AssemblyName="$(AssemblyName)"
+      PackageOutputPath="$(PackageOutputAbsolutePath)"
+      IncludeSymbols="false"
+      IncludeSource="false"
+      PackageTypes="$(PackageType)"
+      IsTool="false"
+      RepositoryUrl="$(RepositoryUrl)"
+      RepositoryType="$(RepositoryType)"
+      NoPackageAnalysis="true"
+      MinClientVersion="$(MinClientVersion)"
+      Serviceable="$(Serviceable)"
+      ContinuePackingAfterGeneratingNuspec="true"
+      NuspecOutputPath="$(NuspecOutputAbsolutePath)"
+      IncludeBuildOutput="false"
+      BuildOutputFolder="$(BuildOutputTargetFolder)"
+      ContentTargetFolders="build"
+      RestoreOutputPath="$(RestoreOutputAbsolutePath)"
+    />
 
   </Target>
 
