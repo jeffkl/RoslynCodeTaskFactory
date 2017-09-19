@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
@@ -51,6 +52,11 @@ namespace RoslynCodeTaskFactory.Internal
 
         protected override string GenerateFullPathToTool()
         {
+            if (!String.IsNullOrWhiteSpace(ToolExe))
+            {
+                return ToolExe;
+            }
+
             string pathToBuildTools = ToolLocationHelper.GetPathToBuildTools(ToolLocationHelper.CurrentToolsVersion, DotNetFrameworkArchitecture.Bitness32);
 
             if (pathToBuildTools != null)
