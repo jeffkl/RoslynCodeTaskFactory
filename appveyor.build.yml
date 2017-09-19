@@ -1,0 +1,11 @@
+version: 1.0.{build}
+skip_non_tags: true
+image: Visual Studio 2017
+configuration: Release
+before_build:
+- cmd: msbuild src\RoslynCodeTaskFactory.sln /t:Restore /bl:LogFile=MSBuild.Restore.binlog /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+build:
+- cmd: msbuild src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj /Target:CustomPack /Verbosity:Minimal /Logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /m /NodeReuse:false /bl:LogFile=MSBuild.Pack.binlog
+artifacts:
+- path: '**\*.nupkg'
+- path: '**\*.*log'
