@@ -77,4 +77,4 @@ You could save the HelloWorld task in a file that is named HelloWorld.targets, a
 ```
 
 ## Samples
-Open [Samples.sln](https://github.com/jeffkl/RoslynCodeTaskFactory/blob/master/src/Samples.sln) to see more samples of the inline task in a .NET Framework and .NET Standard project.
+Open [Samples.sln](https://github.com/jeffkl/RoslynCodeTaskFactory/blob/master/src/Samples.sln) to see more samples of the [inline task](https://github.com/jeffkl/RoslynCodeTaskFactory/blob/master/src/Samples/Directory.Build.targets#L5) in a .NET Framework and .NET Standard project.  
