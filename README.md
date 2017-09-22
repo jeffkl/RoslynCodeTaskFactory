@@ -43,7 +43,7 @@ This example is the same as the one from MSDN with only the `AssemblyFile` attri
 ```
 
 ## Hello World
-Here is a more robust inline task. The HelloWorld task displays "Hello, world!" on the default error logging device, which is typically the system console or the Visual Studio Output window. The Reference element in the example is included just for illustration.
+Here is a more robust inline task. The HelloWorld task displays "Hello, world!" on the default error logging device, which is typically the system console or the Visual Studio Output window.
 ```xml
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
   <!-- This simple inline task displays "Hello, world!" -->  
@@ -53,7 +53,6 @@ Here is a more robust inline task. The HelloWorld task displays "Hello, world!" 
     AssemblyFile="$(RoslynCodeTaskFactory)">
     <ParameterGroup />  
     <Task>  
-      <Reference Include="System.Xml.dll"/>  
       <Using Namespace="System"/>  
       <Using Namespace="System.IO"/>  
       <Code Type="Fragment" Language="cs">  
