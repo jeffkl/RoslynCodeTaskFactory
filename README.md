@@ -19,7 +19,7 @@ Install-Package RoslynCodeTaskFactory
 
 #### DotNet CLI
 ```
-dotnet add package RoslynCodeTaskFactory --version 1.0.10-beta-g8d6232e265
+dotnet add package RoslynCodeTaskFactory
 ```
 The package sets an MSBuild property named `$(RoslynCodeTaskFactory)` which should be used in a `<UsingTask />`.  The RoslynCodeTaskFactory is implemented exactly like the stock MSBuild [CodeTaskFactory](https://msdn.microsoft.com/en-us/library/dd722601.aspx?f=255&MSPPError=-2147217396) with the only difference being which `AssemblyFile` to use.
 
