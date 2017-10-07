@@ -67,6 +67,18 @@ namespace RoslynCodeTaskFactory.Internal
             e.Timestamp));
 
         /// <inheritdoc cref="IBuildEngine.LogWarningEvent"/>
-        public void LogWarningEvent(BuildWarningEventArgs e) => _buildEngine.LogWarningEvent(e);
+        public void LogWarningEvent(BuildWarningEventArgs e) => _buildEngine.LogMessageEvent(new BuildMessageEventArgs(
+            e.Subcategory,
+            e.Code,
+            e.File,
+            e.LineNumber,
+            e.ColumnNumber,
+            e.EndLineNumber,
+            e.EndColumnNumber,
+            e.Message,
+            e.HelpKeyword,
+            e.SenderName,
+            MessageImportance.Low, // Log warnings as low importance messages instead
+            e.Timestamp));
     }
 }
