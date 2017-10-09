@@ -76,6 +76,11 @@
         <BuildAction>Content</BuildAction>
         <PackagePath>build\ref</PackagePath>
       </_PackageFiles>
+
+      <_PackageFiles Include="lib\**">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>build\</PackagePath>
+      </_PackageFiles>
     </ItemGroup>
 
     <ConvertToAbsolutePath Paths="$(OutputPath)">

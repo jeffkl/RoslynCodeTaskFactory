@@ -95,6 +95,21 @@ namespace RoslynCodeTaskFactory
         private static readonly ConcurrentDictionary<TaskInfo, Assembly> CompiledAssemblyCache = new ConcurrentDictionary<TaskInfo, Assembly>();
 
         /// <summary>
+        /// Stores a cache of loaded assemblies by the <see cref="AppDomain.AssemblyResolve"/> handler.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, Assembly> LoadedAssemblyCache = new ConcurrentDictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Stores the path to the directory that this assembly is located in.
+        /// </summary>
+        private static readonly Lazy<string> ThisAssemblyDirectoryLazy = new Lazy<string>(() => Path.GetDirectoryName(typeof(CodeTaskFactory).GetTypeInfo().Assembly.ManifestModule.FullyQualifiedName));
+
+        /// <summary>
+        /// Stores the parent directory of this assembly's directory.
+        /// </summary>
+        private static readonly Lazy<string> ThisAssemblyParentDirectoryLazy = new Lazy<string>(() => Path.GetDirectoryName(ThisAssemblyDirectoryLazy.Value));
+
+        /// <summary>
         /// Stores an instance of a <see cref="TaskLoggingHelper"/> for logging messages.
         /// </summary>
         private TaskLoggingHelper _log;
@@ -121,6 +136,10 @@ namespace RoslynCodeTaskFactory
         /// <inheritdoc cref="ITaskFactory.CleanupTask(ITask)"/>
         public void CleanupTask(ITask task)
         {
+#if NET46
+
+            AppDomain.CurrentDomain.AssemblyResolve -= AppDomain_AssemblyResolve;
+#endif
         }
 
         /// <inheritdoc cref="ITaskFactory.CreateTask(IBuildEngine)"/>
@@ -168,6 +187,11 @@ namespace RoslynCodeTaskFactory
             {
                 TaskType = assembly.GetExportedTypes().FirstOrDefault(type => type.Name.Equals(taskName));
             }
+
+#if NET46
+
+            AppDomain.CurrentDomain.AssemblyResolve += AppDomain_AssemblyResolve;
+#endif
 
             // Initialization succeeded if we found a type matching the task name from the compiled assembly
             //
@@ -443,10 +467,6 @@ namespace RoslynCodeTaskFactory
         /// can compile their own task library.</remarks>
         internal static bool TryResolveAssemblyReferences(TaskLoggingHelper log, TaskInfo taskInfo, out ITaskItem[] items)
         {
-            // Use the parent directory of this assembly as a starting point for resolving assemblies
-            //
-            string thisAssemblyParentDirectory = Path.GetDirectoryName(Path.GetDirectoryName(typeof(CodeTaskFactory).GetTypeInfo().Assembly.ManifestModule.FullyQualifiedName));
-
             // Store the list of resolved assemblies because a user can specify a short name or a full path
             //
             ISet<string> resolvedAssemblyReferences = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -486,7 +506,7 @@ namespace RoslynCodeTaskFactory
                     ? reference
                     : $"{reference}.dll";
 
-                string possiblePath = Path.Combine(thisAssemblyParentDirectory, ReferenceAssemblyDirectoryName, assemblyFileName);
+                string possiblePath = Path.Combine(ThisAssemblyParentDirectoryLazy.Value, ReferenceAssemblyDirectoryName, assemblyFileName);
 
                 if (File.Exists(possiblePath))
                 {
@@ -569,6 +589,49 @@ namespace RoslynCodeTaskFactory
                 }
             }
         }
+
+#if NET46
+
+        /// <summary>
+        /// A custom <see cref="AppDomain.AssemblyResolve"/> handler which loads assemblies needed for the CodeTaskFactory to work.
+        /// </summary>
+        /// <returns></returns>
+        private Assembly AppDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            AssemblyName assemblyName = new AssemblyName(args.Name);
+
+            // Guess the path based on the name
+            //
+            string candidateAssemblyPath = Path.Combine(ThisAssemblyDirectoryLazy.Value, $"{assemblyName.Name}.dll");
+
+            // See if the assembly has already been loaded from this path
+            //
+            if (LoadedAssemblyCache.TryGetValue(candidateAssemblyPath, out Assembly loadedAssembly))
+            {
+                return loadedAssembly;
+            }
+
+            if (File.Exists(candidateAssemblyPath))
+            {
+                AssemblyName candidateAssemblyName = AssemblyName.GetAssemblyName(candidateAssemblyPath);
+
+                // Verify that the requested assembly is the same as this one
+                //
+                if (assemblyName.FullName.Equals(candidateAssemblyName.FullName, StringComparison.OrdinalIgnoreCase))
+                {
+                    loadedAssembly = Assembly.LoadFrom(candidateAssemblyPath);
+
+                    // Cache the loaded assembly for later if necessary
+                    //
+                    LoadedAssemblyCache.TryAdd(candidateAssemblyPath, loadedAssembly);
+
+                    return loadedAssembly;
+                }
+            }
+            return null;
+        }
+
+#endif
 
         /// <summary>
         /// Loads an assembly from the specified path.
