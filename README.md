@@ -30,7 +30,8 @@ This example is the same as the one from MSDN with only the `AssemblyFile` attri
   <UsingTask  
     TaskName="DoNothing"  
     TaskFactory="CodeTaskFactory"  
-    AssemblyFile="$(RoslynCodeTaskFactory)">
+    AssemblyFile="$(RoslynCodeTaskFactory)"
+    Condition=" '$(RoslynCodeTaskFactory)' != '' ">
     <ParameterGroup />  
     <Task>  
       <Reference Include="" />  
@@ -50,7 +51,8 @@ Here is a more robust inline task. The HelloWorld task displays "Hello, world!" 
   <UsingTask  
     TaskName="HelloWorld"
     TaskFactory="CodeTaskFactory"
-    AssemblyFile="$(RoslynCodeTaskFactory)">
+    AssemblyFile="$(RoslynCodeTaskFactory)"
+    Condition=" '$(RoslynCodeTaskFactory)' != '' ">
     <ParameterGroup />  
     <Task>  
       <Using Namespace="System"/>  
