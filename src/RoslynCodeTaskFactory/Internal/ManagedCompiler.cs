@@ -1,13 +1,38 @@
-﻿using System;
-using System.IO;
-using Microsoft.Build.Framework;
+﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace RoslynCodeTaskFactory.Internal
 {
     internal abstract class ManagedCompiler : ToolTask
     {
+        private static readonly string DotnetCliPath = Environment.GetEnvironmentVariable("DOTNET_HOST_PATH");
+
+        private readonly Lazy<string> _executablePath;
+
+        protected ManagedCompiler()
+        {
+            _executablePath = new Lazy<string>(() =>
+            {
+                string pathToBuildTools = ToolLocationHelper.GetPathToBuildTools(ToolLocationHelper.CurrentToolsVersion, DotNetFrameworkArchitecture.Bitness32);
+
+                Func<string>[] possibleLocations =
+                {
+                    // Standard MSBuild and legacy .NET Core
+                    () => Path.Combine(pathToBuildTools, "Roslyn", ToolName),
+                    // Legacy .NET Core
+                    () => Path.Combine(pathToBuildTools, "Roslyn", Path.ChangeExtension(ToolName, ".dll")),
+                    // .NET Core 2.0
+                    () => Path.Combine(pathToBuildTools, "Roslyn", "bincore", Path.ChangeExtension(ToolName, ".dll")),
+                };
+
+                return possibleLocations.Select(possibleLocation => possibleLocation()).FirstOrDefault(File.Exists);
+            }, isThreadSafe: true);
+        }
+
         public bool? Deterministic { get; set; }
 
         public bool? NoConfig { get; set; }
@@ -25,6 +50,8 @@ namespace RoslynCodeTaskFactory.Internal
         public string TargetType { get; set; }
 
         public bool? UseSharedCompilation { get; set; }
+
+        protected bool IsDotnetCli => !String.IsNullOrWhiteSpace(DotnetCliPath);
 
         protected internal virtual void AddResponseFileCommands(CommandLineBuilderExtension commandLine)
         {
@@ -45,6 +72,13 @@ namespace RoslynCodeTaskFactory.Internal
         {
             CommandLineBuilderExtension commandLineBuilder = new CommandLineBuilderExtension();
 
+            if (IsDotnetCli)
+            {
+                commandLineBuilder.AppendFileNameIfNotNull(_executablePath.Value);
+
+                commandLineBuilder.AppendTextUnquoted(" ");
+            }
+
             AddCommandLineCommands(commandLineBuilder);
 
             return commandLineBuilder.ToString();
@@ -57,19 +91,12 @@ namespace RoslynCodeTaskFactory.Internal
                 return ToolExe;
             }
 
-            string pathToBuildTools = ToolLocationHelper.GetPathToBuildTools(ToolLocationHelper.CurrentToolsVersion, DotNetFrameworkArchitecture.Bitness32);
-
-            if (pathToBuildTools != null)
+            if (IsDotnetCli)
             {
-                string toolMSBuildLocation = Path.Combine(pathToBuildTools, "Roslyn", ToolName);
-
-                if (File.Exists(toolMSBuildLocation))
-                {
-                    return toolMSBuildLocation;
-                }
+                return DotnetCliPath;
             }
 
-            return null;
+            return _executablePath.Value;
         }
 
         protected override string GenerateResponseFileCommands()

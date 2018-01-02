@@ -4,9 +4,11 @@ using RoslynCodeTaskFactory.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -160,6 +162,8 @@ namespace RoslynCodeTaskFactory
         /// <inheritdoc cref="ITaskFactory.Initialize"/>
         public bool Initialize(string taskName, IDictionary<string, TaskPropertyInfo> parameterGroup, string taskBody, IBuildEngine taskFactoryLoggingHost)
         {
+            WaitForDebuggerIfConfigured();
+
             _log = new TaskLoggingHelper(taskFactoryLoggingHost, taskName)
             {
                 TaskResources = Strings.ResourceManager,
@@ -806,6 +810,28 @@ namespace RoslynCodeTaskFactory
                     File.Delete(sourceCodePath);
                 }
             }
+        }
+
+        /// <summary>
+        /// Waits for a user to attach a debugger.
+        /// </summary>
+        private void WaitForDebuggerIfConfigured()
+        {
+            if (!String.Equals(Environment.GetEnvironmentVariable("ROSLYNCODETASKFACTORY_DEBUG"), "1"))
+            {
+                return;
+            }
+
+            Process currentProcess = Process.GetCurrentProcess();
+
+            Console.WriteLine(Strings.CodeTaskFactory_WaitingForDebugger, currentProcess.MainModule.FileName, currentProcess.Id);
+
+            while (!Debugger.IsAttached)
+            {
+                Thread.Sleep(200);
+            }
+
+            Debugger.Break();
         }
     }
 }

@@ -159,4 +159,7 @@
     <value>MSB3428: You must specify source code within the Code element or a path to a file containing source code.</value>
     <comment>{StrBegin="MSB3428: "}</comment>
   </data>
+  <data name="CodeTaskFactory_WaitingForDebugger" xml:space="preserve">
+    <value>Waiting for debugger to attach ({0} PID {1}).  Press enter to continue...</value>
+  </data>
 </root>

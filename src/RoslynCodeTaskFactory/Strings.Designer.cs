@@ -160,5 +160,14 @@ namespace RoslynCodeTaskFactory {
                 return ResourceManager.GetString("CodeTaskFactory_NoSourceCode", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting for debugger to attach ({0} PID {1}).  Press enter to continue....
+        /// </summary>
+        internal static string CodeTaskFactory_WaitingForDebugger {
+            get {
+                return ResourceManager.GetString("CodeTaskFactory_WaitingForDebugger", resourceCulture);
+            }
+        }
     }
 }
