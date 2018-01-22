@@ -20,6 +20,8 @@
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" PrivateAssets="All" />
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" PrivateAssets="All" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.0.41" PrivateAssets="All" />
+
+    <PackageReference Include="NETStandard.Library" Version="1.6.1" PrivateAssets="All" Condition=" '$(TargetFramework)' == 'net46' " />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +37,7 @@
     </EmbeddedResource>
 
   </ItemGroup>
-
+  
   <Target Name="CustomPack" DependsOnTargets="GetBuildVersion">
 
     <ItemGroup>
@@ -75,11 +77,6 @@
       <_PackageFiles Include="@(_ReferenceAssemblies)">
         <BuildAction>Content</BuildAction>
         <PackagePath>build\ref</PackagePath>
-      </_PackageFiles>
-
-      <_PackageFiles Include="lib\**">
-        <BuildAction>Content</BuildAction>
-        <PackagePath>build\</PackagePath>
       </_PackageFiles>
     </ItemGroup>
 

@@ -617,21 +617,15 @@ namespace RoslynCodeTaskFactory
 
             if (File.Exists(candidateAssemblyPath))
             {
-                AssemblyName candidateAssemblyName = AssemblyName.GetAssemblyName(candidateAssemblyPath);
+                loadedAssembly = Assembly.LoadFrom(candidateAssemblyPath);
 
-                // Verify that the requested assembly is the same as this one
+                // Cache the loaded assembly for later if necessary
                 //
-                if (assemblyName.FullName.Equals(candidateAssemblyName.FullName, StringComparison.OrdinalIgnoreCase))
-                {
-                    loadedAssembly = Assembly.LoadFrom(candidateAssemblyPath);
+                LoadedAssemblyCache.TryAdd(candidateAssemblyPath, loadedAssembly);
 
-                    // Cache the loaded assembly for later if necessary
-                    //
-                    LoadedAssemblyCache.TryAdd(candidateAssemblyPath, loadedAssembly);
-
-                    return loadedAssembly;
-                }
+                return loadedAssembly;
             }
+
             return null;
         }
 
