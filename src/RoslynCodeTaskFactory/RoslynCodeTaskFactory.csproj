@@ -69,6 +69,11 @@
         <PackagePath>build\</PackagePath>
       </_PackageFiles>
 
+      <_PackageFiles Include="Sdk.props;Sdk.targets">
+        <BuildAction>Content</BuildAction>
+        <PackagePath>Sdk\</PackagePath>
+      </_PackageFiles>
+
       <_PackageFiles Include="ref\**">
         <BuildAction>Content</BuildAction>
         <PackagePath>build\ref</PackagePath>
