@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <ItemGroup>
-    <PackageReference Include="RoslynCodeTaskFactory" Version="1.2.4" PrivateAssets="All" />
+    <PackageReference Include="RoslynCodeTaskFactory" Version="1.2.6" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
