@@ -7,7 +7,7 @@ namespace RoslynCodeTaskFactory.Internal
     {
         public bool? NoStandardLib { get; set; }
 
-        protected override string ToolName => "Csc.exe";
+        protected override string ToolName => "csc.exe";
 
         protected internal override void AddResponseFileCommands(CommandLineBuilderExtension commandLine)
         {
