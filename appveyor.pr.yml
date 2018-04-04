@@ -2,10 +2,10 @@ version: 1.0.{build}
 image: Visual Studio 2017
 skip_tags: true
 before_build:
-- cmd: msbuild src\RoslynCodeTaskFactory.sln /t:Restore /bl:LogFile=MSBuild.Restore.binlog /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- cmd: msbuild RoslynCodeTaskFactory.sln /t:Restore /bl:LogFile=MSBuild.Restore.binlog /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 build:
   verbosity: minimal
-  project: src\RoslynCodeTaskFactory.sln
+  project: RoslynCodeTaskFactory.sln
 after_build:
 - cmd: msbuild src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj /t:CustomPack /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /m /nr:false /bl:LogFile=MSBuild.Pack.binlog
 test_script:

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
@@ -13,14 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="15.3.409" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="15.3.409" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.3.409" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build" Version="15.6.82" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.6.82" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.6.82" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.6.82" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" PrivateAssets="All" />
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" PrivateAssets="All" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.0.41" PrivateAssets="All" />
-
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="All" />
     <PackageReference Include="NETStandard.Library" Version="1.6.1" PrivateAssets="All" Condition=" '$(TargetFramework)' == 'net46' " />
   </ItemGroup>
 
@@ -96,7 +95,7 @@
     <ConvertToAbsolutePath Paths="$(BaseIntermediateOutputPath)">
       <Output TaskParameter="AbsolutePaths" PropertyName="RestoreOutputAbsolutePath" />
     </ConvertToAbsolutePath>
-    
+
     <PackTask
       PackItem="$(MSBuildThisFileFullPath)"
       PackageFiles="@(_PackageFiles)"

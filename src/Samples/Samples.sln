@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26913.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETFramework.ClassLibrary", "Samples\NETFramework.ClassLibrary\NETFramework.ClassLibrary.csproj", "{5EB00C1B-CCEB-44EB-A7A5-244AD4C03ED6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETFramework.ClassLibrary", "NETFramework.ClassLibrary\NETFramework.ClassLibrary.csproj", "{5EB00C1B-CCEB-44EB-A7A5-244AD4C03ED6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETStandard.ClassLibrary", "Samples\NETStandard.ClassLibrary\NETStandard.ClassLibrary.csproj", "{EA661681-E2C4-4272-B584-A42D852D4B9F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETStandard.ClassLibrary", "NETStandard.ClassLibrary\NETStandard.ClassLibrary.csproj", "{EA661681-E2C4-4272-B584-A42D852D4B9F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3831F792-A8D1-439C-AB2C-4EE7BD30E1A1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{3831F792-A8D1-439C-AB2C-4EE7BD30E1A1}"
 	ProjectSection(SolutionItems) = preProject
-		Samples\Directory.Build.props = Samples\Directory.Build.props
-		Samples\Directory.Build.targets = Samples\Directory.Build.targets
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 	EndProjectSection
 EndProject
 Global
