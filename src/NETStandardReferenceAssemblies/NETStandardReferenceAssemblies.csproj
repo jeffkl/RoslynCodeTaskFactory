@@ -26,7 +26,7 @@
       <!--
         Copies all references from NuGet packages to the output directory
       -->
-      <Content Include="@(ReferencePath)" Condition=" '%(ReferencePath.NuGetIsFrameworkReference)' == 'false' " KeepMetadata="CopyToOutputDirectory">
+      <Content Include="@(ReferencePath)" Condition=" '%(ReferencePath.NuGetIsFrameworkReference)' != 'true' " KeepMetadata="CopyToOutputDirectory">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <Link>$(DestinationSubDirectory)%(Filename)%(Extension)</Link>
         <Visible>false</Visible>

@@ -18,6 +18,8 @@
             Log.LogMessage(MessageImportance.High, "Hello from an inline task created by Roslyn!");
             Log.LogMessageFromText($"Parameter1: '{Parameter1}'", MessageImportance.High);
             Log.LogMessageFromText($"Parameter2: '{Parameter2}'", MessageImportance.High);
+            Log.LogMessageFromText($"%TEMP%: {Path.GetTempPath()}", MessageImportance.High);
+            
             Parameter3 = "A value from the Roslyn CodeTaskFactory";]]>
       </Code>
     </Task>

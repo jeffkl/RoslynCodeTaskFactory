@@ -54,7 +54,9 @@ namespace RoslynCodeTaskFactory
                     "System.Collections",
                     "System.IO",
                     "System.IO.FileSystem",
+                    "System.IO.FileSystem.Primitives",
                     "System.Linq",
+                    "System.Runtime.Extensions",
                 }
             },
             // CSharp specific assembly references
