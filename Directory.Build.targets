@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(IncludePublishOutput)' == 'true' ">
+    <InnerTargets>$(InnerTargets);Publish</InnerTargets>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludePublishOutputInPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="IncludePublishOutputInPackage">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="@(ResolvedFileToPublish->'$(PublishDir)%(RelativePath)')">
+        <PackagePath>$(PublishOutputTargetFolder)/$(TargetFramework)/%(ResolvedFileToPublish.RelativePath)</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+</Project>

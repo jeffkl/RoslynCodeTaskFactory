@@ -449,7 +449,7 @@ namespace InlineCode
 
             TaskLoggingHelper log = new TaskLoggingHelper(buildEngine, TaskName)
             {
-                TaskResources = new ResourceManager(typeof(CodeTaskFactory).GetTypeInfo().Assembly.GetType("RoslynCodeTaskFactory.Strings"))
+                TaskResources = new ResourceManager(typeof(CodeTaskFactory).GetTypeInfo().Assembly.GetType("RoslynCodeTaskFactory.Properties.Strings"))
             };
 
             bool success = CodeTaskFactory.TryLoadTaskBody(log, TaskName, taskBody, new List<TaskPropertyInfo>(), out TaskInfo _);
@@ -472,7 +472,7 @@ namespace InlineCode
 
             TaskLoggingHelper log = new TaskLoggingHelper(buildEngine, TaskName)
             {
-                TaskResources = new ResourceManager(typeof(CodeTaskFactory).GetTypeInfo().Assembly.GetType("RoslynCodeTaskFactory.Strings"))
+                TaskResources = new ResourceManager(typeof(CodeTaskFactory).GetTypeInfo().Assembly.GetType("RoslynCodeTaskFactory.Properties.Strings"))
             };
 
             bool success = CodeTaskFactory.TryLoadTaskBody(log, TaskName, taskBody, parameters ?? new List<TaskPropertyInfo>(), out TaskInfo taskInfo);

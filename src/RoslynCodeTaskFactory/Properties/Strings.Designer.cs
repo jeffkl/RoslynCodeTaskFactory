@@ -8,9 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Reflection;
-
-namespace RoslynCodeTaskFactory {
+namespace RoslynCodeTaskFactory.Properties {
     using System;
     
     
@@ -41,7 +39,7 @@ namespace RoslynCodeTaskFactory {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RoslynCodeTaskFactory.Strings", typeof(Strings).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RoslynCodeTaskFactory.Properties.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

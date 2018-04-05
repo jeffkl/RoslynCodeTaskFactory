@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <RoslynCodeTaskFactory Condition=" '$(RoslynCodeTaskFactory)' == '' And '$(MSBuildRuntimeType)' == 'Core' ">$(MSBuildThisFileDirectory)netstandard1.5\RoslynCodeTaskFactory.dll</RoslynCodeTaskFactory>
+    <RoslynCodeTaskFactory Condition=" '$(RoslynCodeTaskFactory)' == '' And '$(MSBuildRuntimeType)' == 'Core' ">$(MSBuildThisFileDirectory)netstandard2.0\RoslynCodeTaskFactory.dll</RoslynCodeTaskFactory>
     <RoslynCodeTaskFactory Condition=" '$(RoslynCodeTaskFactory)' == '' ">$(MSBuildThisFileDirectory)net46\RoslynCodeTaskFactory.dll</RoslynCodeTaskFactory>
   </PropertyGroup>
 

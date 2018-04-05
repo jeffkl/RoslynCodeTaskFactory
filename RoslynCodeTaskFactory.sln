@@ -5,14 +5,13 @@ VisualStudioVersion = 15.0.26913.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoslynCodeTaskFactory", "src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj", "{25886413-E01F-4D3C-89A5-431B3C2C46A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETStandardReferenceAssemblies", "src\NETStandardReferenceAssemblies\NETStandardReferenceAssemblies.csproj", "{E5D1C687-ADEF-4526-A445-C0501EFB1822}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoslynCodeTaskFactory.UnitTests", "src\RoslynCodeTaskFactory.UnitTests\RoslynCodeTaskFactory.UnitTests.csproj", "{AF5955B5-5FC0-45A6-BD75-089A16C73A6A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{CE11FA9F-6A92-4AEF-88CE-9A74D434C9E4}"
 	ProjectSection(SolutionItems) = preProject
-		appveyor.build.yml = appveyor.build.yml
-		appveyor.pr.yml = appveyor.pr.yml
+		appveyor.yml = appveyor.yml
+		Directory.Build.rsp = Directory.Build.rsp
+		Directory.Build.targets = Directory.Build.targets
 		NuGet.config = NuGet.config
 		version.json = version.json
 	EndProjectSection
@@ -27,10 +26,6 @@ Global
 		{25886413-E01F-4D3C-89A5-431B3C2C46A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25886413-E01F-4D3C-89A5-431B3C2C46A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25886413-E01F-4D3C-89A5-431B3C2C46A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5D1C687-ADEF-4526-A445-C0501EFB1822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5D1C687-ADEF-4526-A445-C0501EFB1822}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5D1C687-ADEF-4526-A445-C0501EFB1822}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5D1C687-ADEF-4526-A445-C0501EFB1822}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF5955B5-5FC0-45A6-BD75-089A16C73A6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AF5955B5-5FC0-45A6-BD75-089A16C73A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF5955B5-5FC0-45A6-BD75-089A16C73A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU

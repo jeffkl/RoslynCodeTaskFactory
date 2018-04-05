@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard1.5</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
     <Authors>jeffkl</Authors>
     <Company />
     <Description>An MSBuild CodeTaskFactory that uses Roslyn compiler for cross platform compatibility.</Description>
@@ -10,132 +10,55 @@
     <RepositoryUrl>https://github.com/jeffkl/RoslynCodeTaskFactory</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>MSBuild Roslyn CodeTaskFactory Code Task Factory</PackageTags>
+    <ContentTargetFolders>build</ContentTargetFolders>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludePublishOutput>true</IncludePublishOutput>
+    <PublishOutputTargetFolder>build</PublishOutputTargetFolder>
+    <DebugType Condition=" '$(Configuration)' == 'Release' ">None</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="15.6.82" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="15.6.82" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.6.82" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.6.82" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build" Version="15.6.82" ExcludeAssets="Runtime" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.6.82" ExcludeAssets="Runtime" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.6.82" ExcludeAssets="Runtime" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.6.82" ExcludeAssets="Runtime" PrivateAssets="All" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="All" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.1" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" PrivateAssets="All" />
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" PrivateAssets="All" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="All" />
-    <PackageReference Include="NETStandard.Library" Version="1.6.1" PrivateAssets="All" Condition=" '$(TargetFramework)' == 'net46' " />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <Compile Update="Strings.Designer.cs">
+    <None Remove="RoslynCodeTaskFactory.props;Sdk.props;Sdk.targets" />
+  
+    <Content Include="RoslynCodeTaskFactory.props" />
+    <Content Include="Sdk.props" PackagePath="Sdk\Sdk.props" />
+    <Content Include="Sdk.targets" PackagePath="Sdk\Sdk.targets" />
+
+    <EmbeddedResource Update="Properties\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+
+    <Compile Update="Properties\Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
 
-    <EmbeddedResource Update="Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-
   </ItemGroup>
-  
-  <Target Name="CustomPack" DependsOnTargets="GetBuildVersion">
 
+  <Target Name="Foo" Condition=" '$(TargetFramework)' == 'netstandard2.0' " AfterTargets="IncludePublishOutputInPackage">
     <ItemGroup>
-      <_TargetFrameworks Include="$(TargetFrameworks)" />
+      <TfmSpecificPackageFile Include="@(ReferencePath)">
+        <PackagePath>build/ref/%(ReferencePath.RelativePath)</PackagePath>
+      </TfmSpecificPackageFile>
     </ItemGroup>
-    
-    <PropertyGroup>
-      <StagingPath>$(OutputPath)\staging\</StagingPath>
-    </PropertyGroup>
-    
-    <RemoveDir Directories="$(StagingPath)" />
-
-    <MSBuild Targets="Publish" Projects="$(MSBuildThisFileFullPath)" Properties="TargetFramework=%(_TargetFrameworks.Identity);PublishDir=$(StagingPath)%(_TargetFrameworks.Identity);Configuration=$(Configuration)" />
-
-    <MSBuild Projects="..\NETStandardReferenceAssemblies\NETStandardReferenceAssemblies.csproj" Targets="Restore" />
-
-    <MSBuild Projects="..\NETStandardReferenceAssemblies\NETStandardReferenceAssemblies.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);Platform=$(Platform)">
-      <Output TaskParameter="TargetOutputs" ItemName="_ReferenceAssemblies" />
-    </MSBuild>
-    
-    <ItemGroup>
-      <_PackageFiles Include="$(StagingPath)\**\*" Exclude="$(StagingPath)\**\Microsoft.Build.*">
-        <BuildAction>Content</BuildAction>
-        <PackagePath>build\</PackagePath>
-      </_PackageFiles>
-
-      <_PackageFiles Include="RoslynCodeTaskFactory.props">
-        <BuildAction>Content</BuildAction>
-        <PackagePath>build\</PackagePath>
-      </_PackageFiles>
-
-      <_PackageFiles Include="Sdk.props;Sdk.targets">
-        <BuildAction>Content</BuildAction>
-        <PackagePath>Sdk\</PackagePath>
-      </_PackageFiles>
-
-      <_PackageFiles Include="ref\**">
-        <BuildAction>Content</BuildAction>
-        <PackagePath>build\ref</PackagePath>
-      </_PackageFiles>
-      
-      <_PackageFiles Include="@(_ReferenceAssemblies)">
-        <BuildAction>Content</BuildAction>
-        <PackagePath>build\ref</PackagePath>
-      </_PackageFiles>
-    </ItemGroup>
-
-    <ConvertToAbsolutePath Paths="$(OutputPath)">
-      <Output TaskParameter="AbsolutePaths" PropertyName="PackageOutputAbsolutePath" />
-    </ConvertToAbsolutePath>
-
-    <ConvertToAbsolutePath Paths="$(IntermediateOutputPath)">
-      <Output TaskParameter="AbsolutePaths" PropertyName="NuspecOutputAbsolutePath" />
-    </ConvertToAbsolutePath>
-
-    <ConvertToAbsolutePath Paths="$(BaseIntermediateOutputPath)">
-      <Output TaskParameter="AbsolutePaths" PropertyName="RestoreOutputAbsolutePath" />
-    </ConvertToAbsolutePath>
-
-    <PackTask
-      PackItem="$(MSBuildThisFileFullPath)"
-      PackageFiles="@(_PackageFiles)"
-      PackageVersion="$(PackageVersion)"
-      PackageId="$(PackageId)"
-      Title="$(Title)"
-      Authors="$(Authors)"
-      Description="$(Description)"
-      Copyright="$(Copyright)"
-      RequireLicenseAcceptance="false"
-      LicenseUrl="$(PackageLicenseUrl)"
-      ProjectUrl="$(PackageProjectUrl)"
-      IconUrl="$(PackageIconUrl)"
-      ReleaseNotes="$(PackageReleaseNotes)"
-      Tags="$(PackageTags)"
-      DevelopmentDependency="$(DevelopmentDependency)"
-      TargetFrameworks="@(_TargetFrameworks)"
-      AssemblyName="$(AssemblyName)"
-      PackageOutputPath="$(PackageOutputAbsolutePath)"
-      IncludeSymbols="false"
-      IncludeSource="false"
-      PackageTypes="$(PackageType)"
-      IsTool="false"
-      RepositoryUrl="$(RepositoryUrl)"
-      RepositoryType="$(RepositoryType)"
-      NoPackageAnalysis="true"
-      MinClientVersion="$(MinClientVersion)"
-      Serviceable="$(Serviceable)"
-      ContinuePackingAfterGeneratingNuspec="true"
-      NuspecOutputPath="$(NuspecOutputAbsolutePath)"
-      IncludeBuildOutput="false"
-      BuildOutputFolder="$(BuildOutputTargetFolder)"
-      ContentTargetFolders="build"
-      RestoreOutputPath="$(RestoreOutputAbsolutePath)"
-    />
-
   </Target>
-
-  <Target Name="RemovePreleaseFromVersion"
-          AfterTargets="GetBuildVersion">
+  
+  <Target Name="RemovePreleaseFromVersion" AfterTargets="GetBuildVersion">
     
     <PropertyGroup Condition=" '$(PublicRelease)' == 'true' And '$(PrereleaseVersion)' != '' ">
       <AssemblyInformationalVersion>$(AssemblyInformationalVersion.Replace($(PrereleaseVersion), ''))</AssemblyInformationalVersion>

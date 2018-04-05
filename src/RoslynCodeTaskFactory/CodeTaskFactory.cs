@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using RoslynCodeTaskFactory.Internal;
+using RoslynCodeTaskFactory.Properties;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -51,10 +52,7 @@ namespace RoslynCodeTaskFactory
                 {
                     "Microsoft.Build.Framework",
                     "Microsoft.Build.Utilities.Core",
-                    "System.Collections",
-                    "System.IO",
-                    "System.IO.FileSystem",
-                    "System.Linq",
+                    "netstandard",
                 }
             },
             // CSharp specific assembly references
@@ -81,8 +79,8 @@ namespace RoslynCodeTaskFactory
         {
             // This dictionary contains a mapping between code languages and known aliases (like "C#").  Everything is case-insensitive.
             //
-            {"CS", new HashSet<string>(StringComparer.OrdinalIgnoreCase) {"CSharp", "C#"}},
-            {"VB", new HashSet<string>(StringComparer.OrdinalIgnoreCase) {"VisualBasic", "Visual Basic"}},
+            { "CS", new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "CSharp", "C#" } },
+            { "VB", new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "VisualBasic", "Visual Basic" } },
         };
 
         /// <summary>
@@ -138,10 +136,7 @@ namespace RoslynCodeTaskFactory
         /// <inheritdoc cref="ITaskFactory.CleanupTask(ITask)"/>
         public void CleanupTask(ITask task)
         {
-#if NET46
-
             AppDomain.CurrentDomain.AssemblyResolve -= AppDomain_AssemblyResolve;
-#endif
         }
 
         /// <inheritdoc cref="ITaskFactory.CreateTask(IBuildEngine)"/>
@@ -192,10 +187,7 @@ namespace RoslynCodeTaskFactory
                 TaskType = assembly.GetExportedTypes().FirstOrDefault(type => type.Name.Equals(taskName));
             }
 
-#if NET46
-
             AppDomain.CurrentDomain.AssemblyResolve += AppDomain_AssemblyResolve;
-#endif
 
             // Initialization succeeded if we found a type matching the task name from the compiled assembly
             //
@@ -336,6 +328,7 @@ namespace RoslynCodeTaskFactory
                                 "  Valid child elements are <Code>, <Reference>, and <Using>.");
                             return false;
                         }
+
                         break;
 
                     default:
@@ -375,6 +368,7 @@ namespace RoslynCodeTaskFactory
                     log.LogErrorWithCodeFromResources("CodeTaskFactory_AttributeEmpty", "Source", "Code");
                     return false;
                 }
+
                 // Instead of using the inner text of the <Code /> element, read the specified file as source code
                 //
                 taskInfo.CodeType = CodeTaskFactoryCodeType.Class;
@@ -572,10 +566,12 @@ namespace RoslynCodeTaskFactory
                         {
                             yield return "[Microsoft.Build.Framework.OutputAttribute]";
                         }
+
                         if (taskPropertyInfo.Required)
                         {
                             yield return "[Microsoft.Build.Framework.RequiredAttribute]";
                         }
+
                         yield return $"public {taskPropertyInfo.PropertyType.FullName} {taskPropertyInfo.Name} {{ get; set; }}";
                         break;
 
@@ -584,17 +580,17 @@ namespace RoslynCodeTaskFactory
                         {
                             yield return "<Microsoft.Build.Framework.OutputAttribute>";
                         }
+
                         if (taskPropertyInfo.Required)
                         {
                             yield return "<Microsoft.Build.Framework.RequiredAttribute>";
                         }
+
                         yield return $"Public Property {taskPropertyInfo.Name} As {taskPropertyInfo.PropertyType.FullName}";
                         break;
                 }
             }
         }
-
-#if NET46
 
         /// <summary>
         /// A custom <see cref="AppDomain.AssemblyResolve"/> handler which loads assemblies needed for the CodeTaskFactory to work.
@@ -629,8 +625,6 @@ namespace RoslynCodeTaskFactory
             return null;
         }
 
-#endif
-
         /// <summary>
         /// Loads an assembly from the specified path.
         /// </summary>
@@ -641,11 +635,11 @@ namespace RoslynCodeTaskFactory
             // This method must use reflection so that this task will work on .NET Framework 4.6 (System.Reflection.Assembly)
             // and .NET Core 1.0 (System.Runtime.Loader.AssemblyLoadContext)
             //
-            MethodInfo loadMethodInfo = Type.GetType("System.Reflection.Assembly")?.GetMethod("Load", new[] {typeof(byte[])});
+            MethodInfo loadMethodInfo = Type.GetType("System.Reflection.Assembly")?.GetMethod("Load", new[] { typeof(byte[]) });
 
             if (loadMethodInfo != null)
             {
-                return loadMethodInfo.Invoke(null, new object[] {File.ReadAllBytes(path)}) as Assembly;
+                return loadMethodInfo.Invoke(null, new object[] { File.ReadAllBytes(path) }) as Assembly;
             }
 
             Type assemblyLoadContextType = Type.GetType("System.Runtime.Loader.AssemblyLoadContext");
@@ -656,13 +650,13 @@ namespace RoslynCodeTaskFactory
             {
                 object defaultAssemblyLoadContext = defaultPropertyInfo.GetValue(null);
 
-                MethodInfo loadFromStreamMethodInfo = assemblyLoadContextType.GetMethod("LoadFromStream", new[] {typeof(Stream)});
+                MethodInfo loadFromStreamMethodInfo = assemblyLoadContextType.GetMethod("LoadFromStream", new[] { typeof(Stream) });
 
                 if (loadFromStreamMethodInfo != null)
                 {
                     using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
-                        return loadFromStreamMethodInfo.Invoke(defaultAssemblyLoadContext, new object[] {stream}) as Assembly;
+                        return loadFromStreamMethodInfo.Invoke(defaultAssemblyLoadContext, new object[] { stream }) as Assembly;
                     }
                 }
             }
@@ -761,7 +755,7 @@ namespace RoslynCodeTaskFactory
                     managedCompiler.Optimize = false;
                     managedCompiler.OutputAssembly = new TaskItem(assemblyPath);
                     managedCompiler.References = references.ToArray();
-                    managedCompiler.Sources = new ITaskItem[] {new TaskItem(sourceCodePath)};
+                    managedCompiler.Sources = new ITaskItem[] { new TaskItem(sourceCodePath) };
                     managedCompiler.TargetType = "Library";
                     managedCompiler.UseSharedCompilation = false;
 
