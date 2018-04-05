@@ -1,6 +1,8 @@
 # Roslyn CodeTaskFactory
 
-[![Build status](https://ci.appveyor.com/api/projects/status/4uy3aoqsa5lwi0en?svg=true)](https://ci.appveyor.com/project/CBT/roslyncodetaskfactory)  [![NuGet package](https://img.shields.io/nuget/v/RoslynCodeTaskFactory.svg)](https://www.nuget.org/packages/RoslynCodeTaskFactory)
+[![Build status](https://ci.appveyor.com/api/projects/status/4uy3aoqsa5lwi0en?svg=true)](https://ci.appveyor.com/project/CBT/roslyncodetaskfactory)
+[![NuGet package](https://img.shields.io/nuget/v/RoslynCodeTaskFactory.svg)](https://www.nuget.org/packages/RoslynCodeTaskFactory)
+[![NuGet](https://img.shields.io/nuget/dt/RoslynCodeTaskFactory.svg)](https://www.nuget.org/packages/RoslynCodeTaskFactory)
 
 
 An MSBuild TaskFactory that uses the Roslyn compiler to generate .NET Standard task libraries which can be used by inline tasks.  It is a replacement of the built in CodeTaskFactory which uses CodeDom and does not work in .NET Core.
