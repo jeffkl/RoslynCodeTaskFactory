@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+
+  <ItemGroup>
+    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.1-beta-ga22b9a4e4e" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+
+  <UsingTask TaskName="Unzip"
+             TaskFactory="CodeTaskFactory"
+             AssemblyFile="$(RoslynCodeTaskFactory)"
+             Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+    <ParameterGroup>
+      <SourceFiles ParameterType="System.String[]" Required="true" />
+      <DestinationFolder ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Code Type="Fragment" Language="C#">
+        <![CDATA[
+          foreach(string sourceFile in SourceFiles)
+          {
+            Log.LogMessage(MessageImportance.Normal, "Unzipping '{0}' to '{1}'", sourceFile, DestinationFolder);
+            System.IO.Compression.ZipFile.ExtractToDirectory(sourceFile, DestinationFolder);
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <!--
+    This project is used to verify samples work against the current changes.
+  -->
+  <Target Name="Build">
+
+    <MSBuild Projects="..\..\src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj"
+             Targets="Pack;_GetOutputItemsFromPack">
+      <Output TaskParameter="TargetOutputs" ItemName="OutputPackItems" />
+    </MSBuild>
+
+    <ItemGroup>
+      <OutputPackItems Remove="@(OutputPackItems)" Condition="'%(Extension)' != '.nupkg'" />
+    </ItemGroup>
+
+    <RemoveDir Directories="$(OutputPath)" />
+    
+    <Unzip SourceFiles="@(OutputPackItems)" DestinationFolder="$(OutputPath)" />
+
+    <PropertyGroup>
+      <LocalRoslynCodeTaskFactory Condition=" '$(MSBuildRuntimeType)' == 'Core' ">$([system.IO.Path]::GetFullPath($(OutputPath)build\netstandard2.0\RoslynCodeTaskFactory.dll))</LocalRoslynCodeTaskFactory>
+      <LocalRoslynCodeTaskFactory Condition=" '$(LocalRoslynCodeTaskFactory)' == '' ">$([system.IO.Path]::GetFullPath($(OutputPath)build\net46\RoslynCodeTaskFactory.dll))</LocalRoslynCodeTaskFactory>
+    </PropertyGroup>
+    
+    <Exec Command="msbuild ..\Samples.sln /p:&quot;RoslynCodeTaskFactory=$(LocalRoslynCodeTaskFactory)&quot; /bl:verifysamples.msbuild.binlog" />
+
+    <Exec Command="dotnet build ..\Samples.sln /p:&quot;RoslynCodeTaskFactory=$(LocalRoslynCodeTaskFactory)&quot; /bl:verifysamples.dotnet.binlog" />
+
+  </Target>
+</Project>

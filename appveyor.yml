@@ -8,6 +8,8 @@ build_script:
     IF /I "%APPVEYOR_REPO_TAG%" EQU "TRUE" SET Configuration=Release
 
     MSBuild.exe /BinaryLogger /Logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+    MSBuild.exe Samples\VerifySamples\VerifySamples.proj /BinaryLogger:Samples\VerifySamples\VerifySamples.binlog /Logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 artifacts:
 - path: '**\*.nupkg'
   name: NuGet Packages
