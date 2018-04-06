@@ -38,25 +38,33 @@
     This project is used to verify samples work against the current changes.
   -->
   <Target Name="Build">
-
+    
     <MSBuild Projects="..\..\src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj"
-             Targets="Restore"
-             Properties="MSBuildRestoreSessionId=$([System.Guid]::NewGuid())"/>
-
-    <MSBuild Projects="..\..\src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj"
-             Targets="Build;_GetOutputItemsFromPack"
-             Properties="Configuration=Debug">
+             Targets="_GetProjectVersion;_GetOutputItemsFromPack">
       <Output TaskParameter="TargetOutputs" ItemName="OutputPackItems" />
     </MSBuild>
-
+    
     <ItemGroup>
       <OutputPackItems Remove="@(OutputPackItems)" Condition="'%(Extension)' != '.nupkg'" />
     </ItemGroup>
+    
+    <PropertyGroup>
+      <BuildFirst Condition=" !Exists('@(OutputPackItems)') ">true</BuildFirst>
+    </PropertyGroup>
+
+    <MSBuild Projects="..\..\src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj"
+             Targets="Restore"
+             Properties="MSBuildRestoreSessionId=$([System.Guid]::NewGuid())"
+             Condition=" '$(BuildFirst)' == 'true' " />
+
+    <MSBuild Projects="..\..\src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj"
+             Targets="Build"
+             Condition=" '$(BuildFirst)' == 'true' "/>
 
     <RemoveDir Directories="$(OutputPath)" />
     
     <Unzip SourceFiles="@(OutputPackItems)" DestinationFolder="$(OutputPath)" />
-
+    
     <PropertyGroup>
       <LocalRoslynCodeTaskFactory Condition=" '$(MSBuildRuntimeType)' == 'Core' ">$([system.IO.Path]::GetFullPath($(OutputPath)build\netstandard2.0\RoslynCodeTaskFactory.dll))</LocalRoslynCodeTaskFactory>
       <LocalRoslynCodeTaskFactory Condition=" '$(LocalRoslynCodeTaskFactory)' == '' ">$([system.IO.Path]::GetFullPath($(OutputPath)build\net46\RoslynCodeTaskFactory.dll))</LocalRoslynCodeTaskFactory>
