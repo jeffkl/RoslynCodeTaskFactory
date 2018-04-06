@@ -2,6 +2,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
 
+  <PropertyGroup>
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.1-beta-ga22b9a4e4e" PrivateAssets="All" />
   </ItemGroup>
@@ -36,7 +40,12 @@
   <Target Name="Build">
 
     <MSBuild Projects="..\..\src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj"
-             Targets="Pack;_GetOutputItemsFromPack">
+             Targets="Restore"
+             Properties="MSBuildRestoreSessionId=$([System.Guid]::NewGuid())"/>
+
+    <MSBuild Projects="..\..\src\RoslynCodeTaskFactory\RoslynCodeTaskFactory.csproj"
+             Targets="Build;_GetOutputItemsFromPack"
+             Properties="Configuration=Debug">
       <Output TaskParameter="TargetOutputs" ItemName="OutputPackItems" />
     </MSBuild>
 
@@ -53,9 +62,12 @@
       <LocalRoslynCodeTaskFactory Condition=" '$(LocalRoslynCodeTaskFactory)' == '' ">$([system.IO.Path]::GetFullPath($(OutputPath)build\net46\RoslynCodeTaskFactory.dll))</LocalRoslynCodeTaskFactory>
     </PropertyGroup>
     
-    <Exec Command="msbuild ..\Samples.sln /p:&quot;RoslynCodeTaskFactory=$(LocalRoslynCodeTaskFactory)&quot; /bl:verifysamples.msbuild.binlog" />
+    <!-- 
+      These must be separate invocations to new processes because this instance of MSBuild could have already loaded RoslynCodeTaskFactory.dll
+    -->
+    <Exec Command="msbuild.exe ..\Samples.sln /Property:&quot;RoslynCodeTaskFactory=$(LocalRoslynCodeTaskFactory)&quot; /BinaryLogger:verifysamples.msbuild.binlog" Condition=" '$(MSBuildRuntimeType)' == 'Full' " />
 
-    <Exec Command="dotnet build ..\Samples.sln /p:&quot;RoslynCodeTaskFactory=$(LocalRoslynCodeTaskFactory)&quot; /bl:verifysamples.dotnet.binlog" />
+    <Exec Command="dotnet build ..\Samples.sln /Property:&quot;RoslynCodeTaskFactory=$(LocalRoslynCodeTaskFactory)&quot; /BinaryLogger:verifysamples.dotnet.binlog" />
 
   </Target>
 </Project>
