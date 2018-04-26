@@ -160,6 +160,15 @@ namespace RoslynCodeTaskFactory.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameters are discovered through reflection for Type="Class". Values specified in <ParameterGroup/> will be ignored..
+        /// </summary>
+        internal static string CodeTaskFactory_ParameterGroupIgnoredForCodeTypeClass {
+            get {
+                return ResourceManager.GetString("CodeTaskFactory_ParameterGroupIgnoredForCodeTypeClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Waiting for debugger to attach ({0} PID {1}).  Press enter to continue....
         /// </summary>
         internal static string CodeTaskFactory_WaitingForDebugger {

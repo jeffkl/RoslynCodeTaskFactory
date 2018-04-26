@@ -153,6 +153,21 @@ End Namespace";
         }
 
         [Test]
+        public void CodeTypeClassIgnoresParameterGroupWarning()
+        {
+            TryLoadTaskBodyAndExpectSuccess(
+                taskBody: "<Code Type=\"Class\">code</Code>",
+                parameters: new[]
+                {
+                    new TaskPropertyInfo("P", typeof(string), false, false),
+                },
+                expectedWarningMessages: new[]
+                {
+                    "Parameters are discovered through reflection for Type=\"Class\". Values specified in <ParameterGroup/> will be ignored.",
+                });
+        }
+
+        [Test]
         public void CodeTypeFromTaskBody()
         {
             foreach (CodeTaskFactoryCodeType codeType in Enum.GetValues(typeof(CodeTaskFactoryCodeType)).Cast<CodeTaskFactoryCodeType>())
@@ -466,7 +481,8 @@ namespace InlineCode
             ISet<string> expectedNamespaces = null,
             string expectedCodeLanguage = null,
             CodeTaskFactoryCodeType? expectedCodeType = null,
-            string expectedSourceCode = null)
+            string expectedSourceCode = null,
+            IReadOnlyList<string> expectedWarningMessages = null)
         {
             MockBuildEngine buildEngine = new MockBuildEngine();
 
@@ -478,6 +494,7 @@ namespace InlineCode
             bool success = CodeTaskFactory.TryLoadTaskBody(log, TaskName, taskBody, parameters ?? new List<TaskPropertyInfo>(), out TaskInfo taskInfo);
 
             buildEngine.Errors.ShouldBe(new string[0]);
+            buildEngine.Warnings.ShouldBe(expectedWarningMessages ?? new string[0]);
 
             Assert.True(success);
 
@@ -522,6 +539,8 @@ namespace InlineCode
             public int LineNumberOfTaskNode { get; } = 0;
 
             public string ProjectFileOfTaskNode { get; } = String.Empty;
+
+            public IEnumerable<string> Warnings => Events.OfType<BuildWarningEventArgs>().Select(i => i.Message);
 
             public bool BuildProjectFile(string projectFileName, string[] targetNames, IDictionary globalProperties, IDictionary targetOutputs)
             {

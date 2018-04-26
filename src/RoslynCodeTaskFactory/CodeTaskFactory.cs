@@ -187,6 +187,28 @@ namespace RoslynCodeTaskFactory
                 TaskType = assembly.GetExportedTypes().FirstOrDefault(type => type.Name.Equals(taskName));
             }
 
+            if (TaskType != null)
+            {
+                // Perform automatic parameter detection if the user supplied a class.
+                // This reduces the burden of the developer by not requiring them to
+                // manually specify <ParameterGroup/>.
+                //
+                if (taskInfo.CodeType == CodeTaskFactoryCodeType.Class)
+                {
+                    PropertyInfo[] properties = TaskType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                    _parameters = new TaskPropertyInfo[properties.Length];
+                    for (int i = 0; i < properties.Length; i++)
+                    {
+                        PropertyInfo property = properties[i];
+                        _parameters[i] = new TaskPropertyInfo(
+                            property.Name,
+                            property.PropertyType,
+                            property.GetCustomAttribute<OutputAttribute>() != null,
+                            property.GetCustomAttribute<RequiredAttribute>() != null);
+                    }
+                }
+            }
+
             AppDomain.CurrentDomain.AssemblyResolve += AppDomain_AssemblyResolve;
 
             // Initialization succeeded if we found a type matching the task name from the compiled assembly
@@ -393,6 +415,13 @@ namespace RoslynCodeTaskFactory
                 }
 
                 taskInfo.CodeType = codeType;
+            }
+
+            // Warn that <ParameterGroup/> is ignored if any parameters are supplied when Type="Class".
+            //
+            if (taskInfo.CodeType == CodeTaskFactoryCodeType.Class && parameters.Any())
+            {
+                log.LogWarningWithCodeFromResources("CodeTaskFactory_ParameterGroupIgnoredForCodeTypeClass");
             }
 
             if (languageAttribute != null)

@@ -159,6 +159,9 @@
     <value>MSB3428: You must specify source code within the Code element or a path to a file containing source code.</value>
     <comment>{StrBegin="MSB3428: "}</comment>
   </data>
+  <data name="CodeTaskFactory_ParameterGroupIgnoredForCodeTypeClass" xml:space="preserve">
+    <value>Parameters are discovered through reflection for Type="Class". Values specified in &lt;ParameterGroup/&gt; will be ignored.</value>
+  </data>
   <data name="CodeTaskFactory_WaitingForDebugger" xml:space="preserve">
     <value>Waiting for debugger to attach ({0} PID {1}).  Press enter to continue...</value>
   </data>

@@ -64,6 +64,31 @@
     </Task>
   </UsingTask>
 
+  <!-- A simple in-line class task which inherits parameters from its base class -->
+  <UsingTask TaskName="InterceptingCopy"
+             TaskFactory="CodeTaskFactory"
+             AssemblyFile="$(RoslynCodeTaskFactory)"
+             Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+    <Task>
+      <Reference Include="Microsoft.Build.Tasks.Core"/>
+      <Code Type="Class" Language="cs">
+        <![CDATA[
+          using Microsoft.Build.Framework;
+          using System;
+
+          public class InterceptingCopy : Microsoft.Build.Tasks.Copy
+          {
+            public override bool Execute()
+            {
+              Log.LogMessage(MessageImportance.High, "Copying '{0}' to '{1}'", String.Join(", ", (object[])SourceFiles), String.Join(", ", (object[])DestinationFiles));
+              return base.Execute();
+            }
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
   <Target Name="RunSampleTask" AfterTargets="Build">
     <!-- Call the compiled task -->
     <MySample Parameter1="A value for parameter 1" Parameter2="A value for parameter 2">
@@ -84,6 +109,8 @@
     </PathGetFileName>
 
     <Message Text="File name: '$(MyFileName)'" Importance="High" />
+
+    <InterceptingCopy SourceFiles="Class1.cs" DestinationFiles="$(OutputPath)CopyOfClass1.cs" />
   </Target>
 
 </Project>
