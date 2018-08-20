@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{CE11FA9F
 		Directory.Build.rsp = Directory.Build.rsp
 		Directory.Build.targets = Directory.Build.targets
 		NuGet.config = NuGet.config
+		README.md = README.md
 		version.json = version.json
 	EndProjectSection
 EndProject

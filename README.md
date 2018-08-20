@@ -1,5 +1,12 @@
-# Roslyn CodeTaskFactory
+# Notice
+As of **MSBuild 15.8**, [RoslynCodeTaskFactory](https://github.com/Microsoft/msbuild/blob/master/src/Tasks/RoslynCodeTaskFactory/RoslynCodeTaskFactory.cs) is now built in.  For more information, please read
+[the official documentation](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-roslyncodetaskfactory).  To report issues with the built-in RoslynCodeTaskFactory, please visit [https://github.com/Microsoft/msbuild/issues/new](https://github.com/Microsoft/msbuild/issues/new).
 
+**You will only need to this library if you're using an older version of MSBuild.**
+
+----
+
+# Roslyn CodeTaskFactory
 [![Build status](https://ci.appveyor.com/api/projects/status/4uy3aoqsa5lwi0en?svg=true)](https://ci.appveyor.com/project/CBT/roslyncodetaskfactory)
 [![NuGet package](https://img.shields.io/nuget/v/RoslynCodeTaskFactory.svg)](https://www.nuget.org/packages/RoslynCodeTaskFactory)
 [![NuGet](https://img.shields.io/nuget/dt/RoslynCodeTaskFactory.svg)](https://www.nuget.org/packages/RoslynCodeTaskFactory)
